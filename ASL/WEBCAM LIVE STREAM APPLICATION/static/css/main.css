@@ -1,0 +1,62 @@
+/* main.css */
+.bg-dark {
+    background-color: #87CEFA!important;
+}
+
+#result {
+    color: #0a1c4ed1;
+}
+
+body {
+    background-image: url("https://wallpaperaccess.com/full/1799643.jpg");
+    background-size: cover;
+}
+
+.btn-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-section button {
+    margin-top: 1em;
+}
+
+.component-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.result-section {
+    margin-top: 2em;
+}
+
+h1, h2, h3 {
+    color: #fff;
+}
+
+p {
+    color: #fff;
+}
+
+.navbar {
+    background-color: #17a2b8;
+}
+
+.btn-info {
+    margin-top: 1em;
+}
+
+/* Optional: Style the video feed container */
+div {
+    margin-top: 20px;
+}
+
+
+/* Update the video styling in main.css */
+video {
+    display: block; /* Ensure the video is treated as a block element */
+    margin: 0 auto; /* Center the video within its container */
+}
+

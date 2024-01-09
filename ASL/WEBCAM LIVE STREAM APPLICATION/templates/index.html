@@ -1,0 +1,80 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Recognition</title>
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+
+<body style="background-image: url('https://wallpaperaccess.com/full/1799643.jpg'); background-size: cover;">
+    <nav class="navbar navbar-dark bg-info">
+        <div class="container text-center">
+            <a class="navbar-brand" href="#">ASL Image Recognition</a>
+        </div>
+    </nav>
+
+    <div class="container text-center mt-5">
+        <div class="row">
+            <div class="col-sm-6 bd">
+                <h3>ASL Image Recognition: </h3>
+                <p>The American Sign Language (ASL) is the primary language used by deaf individuals in
+                    North America. It is a visual language that uses a combination of hand gestures, facial
+                    expressions, and body movements to convey meaning. In recent years, there has been an
+                    increasing interest in developing technologies to help bridge the communication gap
+                    between the deaf and hearing communities.</p>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Deaf_or_HoH_person_at_his_workplace_using_a_Video_Relay_Service_to_communicate_with_a_hearing_person_via_a_Video_Interpreter_and_sign_language_SVCC_2007_Brigitte_SLI_%2B_Mark.jpg/1200px-thumbnail.jpg" width=380 height=200 class="img-fluid" alt="ASL Image">
+            </div>
+            <div class="col-sm-6">
+                <h2>Live ASL Recognition:</h2>
+                <video id="video" autoplay style="width: 100%; height: 75%"></video>
+                <h3><p id="result">Result: <span id="classification"></span></p></h3>
+
+                <script>
+                    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(function (stream) {
+                            var video = document.getElementById('video');
+                            video.srcObject = stream;
+
+                            video.addEventListener('loadeddata', function () {
+                                video.style.display = 'block';
+
+                                setInterval(function () {
+                                    sendFrame();
+                                }, 1000 / 10);
+                            });
+                        })
+                        .catch(function (error) {
+                            console.log("Error accessing webcam: ", error);
+                        });
+
+                    function sendFrame() {
+                        var canvas = document.createElement('canvas');
+                        var context = canvas.getContext('2d');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        var frameData = canvas.toDataURL('image/jpeg');
+                        socket.emit('video_frame', frameData);
+                    }
+
+                    socket.on('classification_result', function (data) {
+                        document.getElementById('classification').innerText = data.alpha + ' (Confidence: ' + data.confidence.toFixed(2) + '%)';
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
